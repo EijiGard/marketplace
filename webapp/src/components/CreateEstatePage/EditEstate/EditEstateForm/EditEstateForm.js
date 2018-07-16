@@ -30,7 +30,7 @@ export default class EditEstateForm extends React.PureComponent {
       ...estate,
       data: {
         ...estate.data,
-        name: event.target.estate
+        name: event.target.value
       }
     })
   }
@@ -41,7 +41,7 @@ export default class EditEstateForm extends React.PureComponent {
       ...estate,
       data: {
         ...estate.data,
-        description: event.target.estate
+        description: event.target.value
       }
     })
   }

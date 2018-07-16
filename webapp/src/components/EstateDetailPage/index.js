@@ -1,3 +1,3 @@
-import ParcelDetailPage from './ParcelDetailPage.container'
+import EstateDetailPage from './EstateDetailPage.container'
 
-export default ParcelDetailPage
+export default EstateDetailPage

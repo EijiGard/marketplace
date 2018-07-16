@@ -67,7 +67,7 @@ export default class EstateSelect extends React.PureComponent {
     )
   }
 
-  handleParcelClick = wallet => (x, y) => {
+  handleParcelClick = wallet => ({ x, y }) => {
     if (!isOwner(wallet, buildCoordinate(x, y))) {
       return
     }

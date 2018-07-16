@@ -1,6 +1,6 @@
 # Decentraland HTTP API
 
-Base URL:  `https://api.decentraland.org/`
+Base URL: `https://api.decentraland.org/`
 
 Specify version: `https://api.decentraland.org/v1`
 
