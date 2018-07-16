@@ -42,12 +42,12 @@ if (env.isDevelopment()) {
 
 new TranslationRouter(app).mount()
 new PublicationRouter(app).mount()
+new MortgageRouter(app).mount()
 new ParcelRouter(app).mount()
 new EstateRouter(app).mount()
 new DistrictRouter(app).mount()
 new ContributionRouter(app).mount()
 new MapRouter(app).mount()
-new MortgageRouter(app).mount()
 
 /* Start the server only if run directly */
 if (require.main === module) {

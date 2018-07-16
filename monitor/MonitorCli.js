@@ -2,7 +2,7 @@ import { cli, Log } from 'decentraland-commons'
 import { Handlers } from './handlers'
 import { EventMonitor } from './EventMonitor'
 import { processEvents } from './processEvents'
-import { BlockchainEvent } from '../../src/BlockchainEvent'
+import { BlockchainEvent } from '../src/BlockchainEvent'
 
 const log = new Log('MonitorCli')
 
@@ -58,10 +58,10 @@ export class MonitorCli {
     }
   }
 
-  processStoredEvents = fromBlock => {
+  processStoredEvents = (fromBlock, callback = () => {}) => {
     if (this.isProcessRunning) {
       return setTimeout(
-        () => this.processStoredEvents(fromBlock),
+        () => this.processStoredEvents(fromBlock, callback),
         this.processDelay
       )
     }
@@ -69,7 +69,11 @@ export class MonitorCli {
 
     this.processTimeout = setTimeout(() => {
       this.isProcessRunning = true
-      this.processEvents(fromBlock).then(() => (this.isProcessRunning = false))
+
+      this.processEvents(fromBlock).then(() => {
+        this.isProcessRunning = false
+        callback()
+      })
     }, this.processDelay)
   }
 
@@ -84,6 +88,7 @@ export class MonitorCli {
     if (!handler) throw new Error('Could not find a valid handler')
 
     const fromBlock = await this.getFromBlock(options)
+    const onEnd = () => this.runEnd(options)
 
     eventMonitor.run(options, async (error, logs) => {
       if (error) {
@@ -96,8 +101,10 @@ export class MonitorCli {
           await handler(logs)
         }
 
-        if (!options.skipProcess) {
-          this.processStoredEvents(fromBlock)
+        if (options.skipProcess) {
+          onEnd()
+        } else {
+          this.processStoredEvents(fromBlock, onEnd)
         }
       }
     })
@@ -107,5 +114,11 @@ export class MonitorCli {
     return options.fromBlock === 'latest'
       ? await BlockchainEvent.findLastBlockNumber()
       : options.fromBlock
+  }
+
+  runEnd(options) {
+    if (!options.watch) {
+      process.exit(1)
+    }
   }
 }

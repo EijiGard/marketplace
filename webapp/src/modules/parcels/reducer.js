@@ -1,10 +1,9 @@
 import {
-  FETCH_PARCELS_REQUEST,
-  FETCH_PARCELS_SUCCESS,
-  FETCH_PARCELS_FAILURE,
   FETCH_PARCEL_REQUEST,
   FETCH_PARCEL_SUCCESS,
   FETCH_PARCEL_FAILURE,
+  FETCH_PARCELS_SUCCESS,
+  FETCH_PARCELS_FAILURE,
   EDIT_PARCEL_REQUEST,
   EDIT_PARCEL_SUCCESS,
   EDIT_PARCEL_FAILURE
@@ -23,8 +22,8 @@ import {
 import { FETCH_TRANSACTION_SUCCESS } from 'modules/transaction/actions'
 import { FETCH_MAP_SUCCESS } from 'modules/map/actions'
 import { loadingReducer } from 'modules/loading/reducer'
-import { buildCoordinate, normalizeParcel, toParcelObject } from 'shared/parcel'
 import { CREATE_ESTATE_SUCCESS } from 'modules/estates/actions'
+import { buildCoordinate, normalizeParcel, toParcelObject } from 'shared/parcel'
 
 import {
   FETCH_ACTIVE_PARCEL_MORTGAGES_SUCCESS,
@@ -39,8 +38,7 @@ const INITIAL_STATE = {
 
 export function parcelsReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
-    case FETCH_PARCEL_REQUEST:
-    case FETCH_PARCELS_REQUEST: {
+    case FETCH_PARCEL_REQUEST: {
       return {
         ...state,
         loading: loadingReducer(state.loading, action)
@@ -72,7 +70,7 @@ export function parcelsReducer(state = INITIAL_STATE, action) {
         ...state,
         loading: loadingReducer(state.loading, action),
         error: null,
-        data: { ...state.data, ...action.parcels }
+        data: { ...state.data, ...action.assets.parcels }
       }
     }
     case FETCH_PUBLICATIONS_SUCCESS:
@@ -85,8 +83,8 @@ export function parcelsReducer(state = INITIAL_STATE, action) {
           ...toParcelObject(action.parcels, state.data)
         }
       }
-    case FETCH_PARCEL_FAILURE:
-    case FETCH_PARCELS_FAILURE: {
+    case FETCH_PARCELS_FAILURE:
+    case FETCH_PARCEL_FAILURE: {
       return {
         ...state,
         loading: loadingReducer(state.loading, action),

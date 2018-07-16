@@ -9,11 +9,11 @@ import {
 import { toEstateObject, calculateZoomAndCenter } from '../shared/estate'
 import { Viewport, Bounds } from '../shared/map'
 import { Map as MapRenderer } from '../shared/map/render'
-import { toPublicationObject, PUBLICATION_TYPES } from '../shared/publication'
+import { toPublicationObject } from '../shared/publication'
 import { AssetRouter } from '../Asset'
-import { Parcel } from '../Parcel'
+import { Parcel, coordinates } from '../Parcel'
 import { Estate, EstateService } from '../Estate'
-import { blacklist } from '../lib'
+import { blacklist, unsafeParseInt } from '../lib'
 
 const { minX, maxX, minY, maxY } = Bounds.getBounds()
 const MAX_AREA = 15000
@@ -87,24 +87,22 @@ export class MapRouter {
   }
 
   async getMap(req) {
+    let nw
+    let se
     try {
-      const nw = server.extractFromReq(req, 'nw')
-      const se = server.extractFromReq(req, 'se')
-
-      const parcelsRange = await Parcel.inRange(nw, se)
-      const parcels = utils.mapOmit(parcelsRange, blacklist.parcel)
-      const estates = await EstateService.getByParcels(parcels)
-
-      const assets = { parcels, estates }
-      const total = parcels.length + estates.length
-      console.log(assets.estates)
-      return { assets, total }
-    } catch (error) {
-      // Force parcel type
-      req.params.type = PUBLICATION_TYPES.parcel
-      const { assets, total } = await new AssetRouter().getAssets(req)
-      return { assets, total }
+      nw = server.extractFromReq(req, 'nw')
+      se = server.extractFromReq(req, 'se')
+    } catch (_) {
+      throw new Error('Both "nw" and "se" are required query params')
     }
+
+    const parcelsRange = await Parcel.inRange(nw, se)
+    const parcels = utils.mapOmit(parcelsRange, blacklist.parcel)
+    const estates = await EstateService.getByParcels(parcels)
+
+    const assets = { parcels, estates }
+    const total = parcels.length + estates.length
+    return { assets, total }
   }
 
   async sendPNG(
@@ -193,35 +191,37 @@ export class MapRouter {
 
   sanitizeEstate(req) {
     return {
-      id: this.getId(req, 'id'),
+      id: server.extractFromReq(req, 'id'),
       ...this.sanitize(req)
     }
   }
 
   sanitize(req) {
     return {
-      x: this.getNumber(req, 'x', minX, maxX, 0),
-      y: this.getNumber(req, 'y', minY, maxY, 0),
-      width: this.getNumber(req, 'width', 32, 1024, 500),
-      height: this.getNumber(req, 'height', 32, 1024, 500),
-      size: this.getNumber(req, 'size', 5, 40, 10),
+      x: this.getInteger(req, 'x', minX, maxX, 0),
+      y: this.getInteger(req, 'y', minY, maxY, 0),
+      width: this.getInteger(req, 'width', 32, 1024, 500),
+      height: this.getInteger(req, 'height', 32, 1024, 500),
+      size: this.getInteger(req, 'size', 5, 40, 10),
       center: this.getCoords(req, 'center', { x: 0, y: 0 }),
       selected: this.getCoordsArray(req, 'selected', []),
       showPublications: this.getBoolean(req, 'publications', false)
     }
   }
 
-  getNumber(req, name, min, max, defaultValue) {
-    let param
+  getInteger(req, name, min, max, defaultValue) {
+    let param, value
     try {
       param = server.extractFromReq(req, name)
     } catch (error) {
       return defaultValue
     }
-    const value = parseInt(param, 10)
-    if (isNaN(value)) {
+
+    try {
+      value = unsafeParseInt(param)
+    } catch (e) {
       throw new Error(
-        `Invalid param "${name}" should be a number but got "${param}".`
+        `Invalid param "${name}" should be a integer but got "${param}".`
       )
     }
     return value > max ? max : value < min ? min : value
@@ -236,12 +236,11 @@ export class MapRouter {
     }
     let coords
     try {
-      const split = splitCoordinate(param)
-      const [x, y] = split.map(coord => parseInt(coord, 10))
-      coords = { x, y }
-      if (!areCoordsValid(coords)) {
+      if (!coordinates.isValid(param)) {
         throw new Error('Invalid coords')
       }
+      const [x, y] = splitCoordinate(param)
+      coords = { x, y }
     } catch (error) {
       throw new Error(
         `Invalid param "${name}" should be a coordinate "x,y" but got "${param}".`
@@ -257,16 +256,16 @@ export class MapRouter {
     } catch (error) {
       return defaultValue
     }
+
     let coordsArray = []
     try {
-      coordsArray = param
-        .split(';')
-        .map(pair => splitCoordinate(pair))
-        .map(pair => pair.map(coord => parseInt(coord, 10)))
-        .map(([x, y]) => ({ x, y }))
-      if (coordsArray.some(coords => !areCoordsValid(coords))) {
-        throw new Error('Invalid coords')
-      }
+      coordsArray = param.split(';').map(pair => {
+        const [x, y] = splitCoordinate(pair)
+        if (!coordinates.isValid(pair)) {
+          throw new Error('Invalid coords')
+        }
+        return { x, y }
+      })
     } catch (error) {
       throw new Error(
         `Invalid param "${name}" should be a list of coordinates "x1,y1;x2,y2" but got "${param}".`

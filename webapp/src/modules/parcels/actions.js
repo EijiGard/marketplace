@@ -1,7 +1,6 @@
 import { buildTransactionAction } from 'modules/transaction/utils'
 
 // Fetch Parcels
-
 export const FETCH_PARCELS_REQUEST = '[Request] Fetch Parcels'
 export const FETCH_PARCELS_SUCCESS = '[Success] Fetch Parcels'
 export const FETCH_PARCELS_FAILURE = '[Failure] Fetch Parcels'

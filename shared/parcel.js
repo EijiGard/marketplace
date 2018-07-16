@@ -5,11 +5,15 @@ export function buildCoordinate(x, y) {
 }
 
 export function splitCoordinate(id) {
-  return id ? id.split(',') : [0, 0]
+  let ids = [0, 0]
+  if (id) {
+    ids = id.split(',').map(coord => parseInt(coord, 10))
+  }
+  return ids
 }
 
 export function isParcel(asset) {
-  return !!asset.x
+  return typeof asset.x === 'undefined' && typeof asset.y === 'undefined'
 }
 
 export function toParcelObject(
@@ -42,8 +46,8 @@ export function normalizeParcel(parcel, prevParcel = {}) {
   return normalizedParcel
 }
 
-export function connectParcels(array, parcels) {
-  array.forEach(parcel => {
+export function connectParcels(parcelArray, parcels) {
+  for (const parcel of parcelArray) {
     const { id, x, y } = parcel
     if (parcels[id].in_estate || parcels[id].district_id != null) {
       const leftId = buildCoordinate(x - 1, y)
@@ -54,18 +58,26 @@ export function connectParcels(array, parcels) {
       parcels[id].connectedTop = areConnected(parcels, id, topId)
       parcels[id].connectedTopLeft = areConnected(parcels, id, topLeftId)
     }
-  })
+  }
+
   return parcels
 }
 
 export function areConnected(parcels, parcelId, sideId) {
   const parcel = parcels[parcelId]
   const sideParcel = parcels[sideId]
-  return (
-    !sideParcel ||
-    isSameValue(parcel, sideParcel, 'district_id') ||
-    (parcel.in_estate && isSameValue(parcel, sideParcel, 'owner'))
-  )
+
+  if (!sideParcel) {
+    return false
+  }
+
+  const sameDistrict = parcel.district_id === sideParcel.district_id
+  if (parcel.district_id && sameDistrict) {
+    return true
+  }
+
+  const sameOwner = parcel.owner === sideParcel.owner
+  return parcel.in_estate && parcel.owner && sameOwner
 }
 
 export function isSameValue(parcelA, parcelB, prop) {

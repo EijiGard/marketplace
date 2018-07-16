@@ -58,6 +58,8 @@ export class EstateRouter {
       estates = await Estate.findByOwner(address)
     }
 
+    console.log('a', address, estates)
+
     return utils.mapOmit(estates, blacklist.estate)
   }
 }

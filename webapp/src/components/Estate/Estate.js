@@ -15,7 +15,11 @@ export default class Estate extends React.PureComponent {
   }
 
   isConnected = address => {
+<<<<<<< HEAD
     return !!address.estate_ids
+=======
+    return address.estate_ids && address.estate_ids.length > 0
+>>>>>>> master
   }
 
   render() {

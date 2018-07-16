@@ -1,6 +1,6 @@
 import { Model } from 'decentraland-commons'
 import { BlockchainEvent } from '../BlockchainEvent'
-import { SQL } from '../database'
+import { SQL, toRawStrings } from '../database'
 import { PUBLICATION_STATUS, PUBLICATION_TYPES } from '../shared/publication'
 
 export class Publication extends Model {
@@ -46,6 +46,10 @@ export class Publication extends Model {
     return this.find({ asset_id, status }, { created_at: 'DESC' })
   }
 
+  static deleteByAsset(asset) {
+    return this.delete({ asset_id: asset.id })
+  }
+
   static async cancelOlder(asset_id, block_number) {
     const name = BlockchainEvent.EVENTS.publicationCreated
     const status = PUBLICATION_STATUS.open
@@ -78,7 +82,7 @@ export class Publication extends Model {
     return this.db.query(
       SQL`UPDATE ${SQL.raw(this.tableName)}
         SET status = ${newStatus}
-        WHERE tx_hash IN (${txHashes})`
+        WHERE tx_hash IN (${toRawStrings(txHashes)})`
     )
   }
 }
