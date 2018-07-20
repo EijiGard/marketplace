@@ -13,7 +13,7 @@ export function splitCoordinate(id) {
 }
 
 export function isParcel(asset) {
-  return typeof asset.x === 'undefined' && typeof asset.y === 'undefined'
+  return typeof asset.x !== 'undefined' && typeof asset.y !== 'undefined'
 }
 
 export function toParcelObject(

@@ -19,7 +19,8 @@ export default class ParcelDetailPage extends React.PureComponent {
     user: PropTypes.string,
     onFetchParcelPublications: PropTypes.func.isRequired,
     onFetchActiveParcelMortgages: PropTypes.func.isRequired,
-    onBuy: PropTypes.func.isRequired
+    onBuy: PropTypes.func.isRequired,
+    onAssetClick: PropTypes.func.isRequired
   }
 
   componentWillMount() {

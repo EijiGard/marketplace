@@ -35,7 +35,8 @@ const mapDispatch = dispatch => ({
     dispatch(fetchParcelPublicationsRequest(x, y, PUBLICATION_STATUS.open)),
   onFetchActiveParcelMortgages: (x, y) =>
     dispatch(fetchActiveParcelMortgagesRequest(x, y)),
-  onBuy: ({ x, y }) => dispatch(navigateTo(locations.buyLand(x, y)))
+  onBuy: ({ x, y }) => dispatch(navigateTo(locations.buyLand(x, y))),
+  onAssetClick: asset => dispatch(navigateTo(locations.assetDetail(asset)))
 })
 
 export default withRouter(connect(mapState, mapDispatch)(ParcelDetailPage))

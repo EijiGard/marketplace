@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Grid, Container } from 'semantic-ui-react'
 
-import ParcelPreview from 'components/ParcelPreview'
+import AssetDetailPage from 'components/AssetDetailPage'
 import EstateSelectActions from './EstateSelectActions'
 import Parcel from 'components/Parcel'
 import { t } from 'modules/translation/utils'
@@ -104,15 +104,9 @@ export default class EstateSelect extends React.PureComponent {
         {(parcel, isOwner, wallet) => (
           <div className="EstateSelect">
             <div className="parcel-preview" title={t('parcel_detail.view')}>
-              <ParcelPreview
-                x={parcel.x}
-                y={parcel.y}
-                selected={parcels}
-                isDraggable
-                showMinimap
-                showPopup
-                showControls
-                onClick={this.handleParcelClick(wallet)}
+              <AssetDetailPage
+                asset={parcel}
+                onAssetClick={this.handleParcelClick(wallet)}
               />
             </div>
             <Container>
