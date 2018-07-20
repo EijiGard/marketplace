@@ -4,6 +4,7 @@ import { Container } from 'semantic-ui-react'
 
 import { assetType } from 'components/types'
 import ParcelPreview from 'components/ParcelPreview'
+import { isParcel } from 'shared/parcel'
 
 import './AssetDetailPage.css'
 
@@ -32,14 +33,13 @@ export default class AssetDetailPage extends React.PureComponent {
     if (error) {
       return null
     }
-
     return (
       <div className="AssetDetailPage">
         <div className="parcel-preview">
           <ParcelPreview
             x={x}
             y={y}
-            selected={asset}
+            selected={isParcel(asset) ? asset : asset.data.parcels}
             isDraggable
             showMinimap
             showPopup

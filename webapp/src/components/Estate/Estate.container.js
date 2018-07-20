@@ -1,15 +1,19 @@
 import { connect } from 'react-redux'
-import { locations } from 'locations'
 import { push } from 'react-router-redux'
+
+import { locations } from 'locations'
 import { fetchEstateRequest } from 'modules/estates/actions'
 import { getData as getEstates, getLoading } from 'modules/estates/selectors'
+import { isNewAsset } from 'shared/asset'
 
 import Estate from './Estate'
 
 const mapState = (state, { id }) => {
   const estates = getEstates(state)
-  const isLoading = getLoading(state).some(estate => estate.id === id)
-  const estate = estates[id]
+  const isLoading = isNewAsset(id)
+    ? false
+    : getLoading(state).some(estate => estate.id === id)
+  const estate = isNewAsset(id) ? null : estates[id]
   return {
     isLoading,
     estate

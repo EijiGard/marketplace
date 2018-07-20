@@ -30,7 +30,7 @@ export const coordsType = shape({
 })
 
 export const assetType = shape({
-  id: string.isRequired,
+  id: string,
   owner: string
 })
 
@@ -48,8 +48,7 @@ export const parcelType = shape({
 export const estateType = shape({
   id: string,
   owner: string,
-  data: object,
-  parcels: arrayOf(parcelType)
+  data: object
 })
 
 export const contributionType = shape({

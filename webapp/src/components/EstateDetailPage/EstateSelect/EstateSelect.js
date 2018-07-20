@@ -3,21 +3,22 @@ import PropTypes from 'prop-types'
 import { Grid, Container } from 'semantic-ui-react'
 
 import AssetDetailPage from 'components/AssetDetailPage'
+import ParcelCard from 'components/ParcelCard'
 import EstateSelectActions from './EstateSelectActions'
-import Parcel from 'components/Parcel'
 import { t } from 'modules/translation/utils'
 import { coordsType } from 'components/types'
 import { getCoordsMatcher, isEqualCoords, buildCoordinate } from 'shared/parcel'
 import { isOwner } from 'shared/asset'
-
 import './EstateSelect.css'
 
 export default class EstateSelect extends React.PureComponent {
   static propTypes = {
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
+    x: PropTypes.number,
+    y: PropTypes.number,
+    estate: PropTypes.object,
     parcels: PropTypes.arrayOf(coordsType).isRequired,
     error: PropTypes.string,
+    wallet: PropTypes.object.isRequired,
     onCancel: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired
@@ -67,7 +68,7 @@ export default class EstateSelect extends React.PureComponent {
     )
   }
 
-  handleParcelClick = wallet => ({ x, y }) => {
+  handleParcelClick = wallet => (estate, { x, y }) => {
     if (!isOwner(wallet, buildCoordinate(x, y))) {
       return
     }
@@ -95,42 +96,60 @@ export default class EstateSelect extends React.PureComponent {
   }
 
   render() {
-    const { x, y, error, onCancel, onContinue, parcels } = this.props
+    const {
+      estate,
+      x,
+      y,
+      error,
+      onCancel,
+      onContinue,
+      parcels,
+      wallet,
+      allParcels
+    } = this.props
     if (error) {
       return null
     }
     return (
-      <Parcel x={x} y={y}>
-        {(parcel, isOwner, wallet) => (
-          <div className="EstateSelect">
-            <div className="parcel-preview" title={t('parcel_detail.view')}>
-              <AssetDetailPage
-                asset={parcel}
-                onAssetClick={this.handleParcelClick(wallet)}
-              />
-            </div>
-            <Container>
-              <Grid className="estate-selection">
-                <Grid.Row>
-                  <Grid.Column width={8}>
-                    <h3>{t('estate_select.selection')}</h3>
-                    <p className="description">
-                      {t('estate_select.description', { x, y })}
-                    </p>
-                  </Grid.Column>
-                  <Grid.Column className="parcel-actions-container" width={8}>
-                    <EstateSelectActions
-                      onCancel={onCancel}
-                      onContinue={onContinue}
-                      disabled={parcels.length <= 1}
+      <div className="EstateSelect">
+        <div className="parcel-preview" title={t('parcel_detail.view')}>
+          <AssetDetailPage
+            asset={estate}
+            onAssetClick={this.handleParcelClick(wallet)}
+          />
+        </div>
+        <Container>
+          <Grid className="estate-selection">
+            <Grid.Row>
+              <Grid.Column width={8}>
+                <h3>{t('estate_select.selection')}</h3>
+                <p className="description">
+                  {t('estate_select.description', { x, y })}
+                </p>
+              </Grid.Column>
+              <Grid.Column className="parcel-actions-container" width={8}>
+                <EstateSelectActions
+                  onCancel={onCancel}
+                  onContinue={onContinue}
+                  disabled={parcels.length <= 1}
+                />
+              </Grid.Column>
+              <Grid.Column width={16}>
+                {parcels.map(({ x, y }) => {
+                  const parcel = allParcels[`${x},${y}`]
+                  return parcel ? (
+                    <ParcelCard
+                      key={parcel.id}
+                      parcel={parcel}
+                      withMap={false}
                     />
-                  </Grid.Column>
-                </Grid.Row>
-              </Grid>
-            </Container>
-          </div>
-        )}
-      </Parcel>
+                  ) : null
+                })}
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        </Container>
+      </div>
     )
   }
 }

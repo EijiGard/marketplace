@@ -5,7 +5,11 @@ export function isEstate(asset) {
 export function getEstateByParcel(parcel, estates) {
   return Object.keys(estates)
     .map(estateId => estates[estateId])
-    .find(estate => estate.id === parcel.owner)
+    .find(
+      estate =>
+        estate.data.parcels.filter(p => p.x === parcel.x && p.y === parcel.y)
+          .length > 0
+    )
 }
 
 export function areOnSameEstate(parcels) {

@@ -10,14 +10,12 @@ import { toEstateObject, calculateZoomAndCenter } from '../shared/estate'
 import { Viewport, Bounds } from '../shared/map'
 import { Map as MapRenderer } from '../shared/map/render'
 import { toPublicationObject } from '../shared/publication'
-import { AssetRouter } from '../Asset'
 import { Parcel, coordinates } from '../Parcel'
 import { Estate, EstateService } from '../Estate'
 import { blacklist, unsafeParseInt } from '../lib'
 
 const { minX, maxX, minY, maxY } = Bounds.getBounds()
 const MAX_AREA = 15000
-const areCoordsValid = coords => !isNaN(coords.x) && !isNaN(coords.y)
 
 export class MapRouter {
   constructor(app) {

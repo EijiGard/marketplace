@@ -3,28 +3,26 @@ import PropTypes from 'prop-types'
 
 import EstateSelect from './EstateSelect'
 import EditEstate from './EditEstate'
+import Estate from 'components/Estate'
 
 export default class EstateDetailPage extends React.PureComponent {
   static propTypes = {
-    x: PropTypes.number.isRequired,
-    y: PropTypes.number.isRequired,
+    x: PropTypes.number,
+    y: PropTypes.number,
+    id: PropTypes.string,
     createEstate: PropTypes.func.isRequired
   }
 
   constructor(props) {
     super(props)
 
-    const { x, y } = this.props
     this.state = {
-      estate: {
-        data: {
-          name: '',
-          description: '',
-          parcels: [{ x, y }]
-        }
-      },
       isSelecting: true
     }
+  }
+
+  updateState = estate => {
+    this.setState({ estate })
   }
 
   handleSwitch = () => {
@@ -35,10 +33,12 @@ export default class EstateDetailPage extends React.PureComponent {
     const { estate } = this.state
     this.setState({
       estate: {
+        ...estate,
         data: {
           ...estate.data,
           parcels
-        }
+        },
+        parcels
       }
     })
   }
@@ -53,24 +53,36 @@ export default class EstateDetailPage extends React.PureComponent {
 
   render() {
     const { isSelecting, estate } = this.state
+    const { id, x, y } = this.props
 
     return (
-      <React.Fragment>
-        {isSelecting ? (
-          <EstateSelect
-            parcels={estate.data.parcels}
-            onContinue={this.handleSwitch}
-            onChange={this.handleChangeParcels}
-          />
-        ) : (
-          <EditEstate
-            estate={estate}
-            onCancel={this.handleSwitch}
-            onChange={this.handleChange}
-            onSubmit={this.handleSubmit}
-          />
-        )}
-      </React.Fragment>
+      <Estate id={id} x={x} y={y} onEstateFetched={this.updateState}>
+        {(asset, isOwner, wallet) => {
+          if (!estate) {
+            return null
+          }
+          return (
+            <React.Fragment>
+              {isSelecting ? (
+                <EstateSelect
+                  estate={estate}
+                  parcels={estate.data.parcels}
+                  onContinue={this.handleSwitch}
+                  onChange={this.handleChangeParcels}
+                  wallet={wallet}
+                />
+              ) : (
+                <EditEstate
+                  estate={estate}
+                  onCancel={this.handleSwitch}
+                  onChange={this.handleChange}
+                  onSubmit={this.handleSubmit}
+                />
+              )}
+            </React.Fragment>
+          )
+        }}
+      </Estate>
     )
   }
 }

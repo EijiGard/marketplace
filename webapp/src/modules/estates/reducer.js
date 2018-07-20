@@ -48,16 +48,7 @@ export function estatesReducer(state = INITIAL_STATE, action) {
       }
     }
     case FETCH_ESTATE_SUCCESS: {
-      const { id, estate } = action
-      return {
-        ...state,
-        loading: loadingReducer(state.loading, action),
-        error: null,
-        data: {
-          ...state.data,
-          [id]: estate
-        }
-      }
+      return state
     }
     case FETCH_MAP_SUCCESS: {
       return {

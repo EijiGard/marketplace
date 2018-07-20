@@ -21,11 +21,16 @@ export default class ParcelCard extends React.PureComponent {
     parcel: parcelType,
     publications: PropTypes.objectOf(publicationType),
     debounce: PropTypes.number,
-    showMortgage: PropTypes.bool
+    showMortgage: PropTypes.bool,
+    withMap: PropTypes.bool
+  }
+
+  static defaultProps = {
+    withMap: true
   }
 
   render() {
-    const { parcel, debounce, publications, showMortgage } = this.props
+    const { parcel, debounce, publications, showMortgage, withMap } = this.props
     const { x, y } = parcel
 
     const parcelName = this.props.parcel.data.name || 'Parcel'
@@ -34,15 +39,17 @@ export default class ParcelCard extends React.PureComponent {
     return (
       <Card className="ParcelCard">
         <Link to={locations.parcelDetail(x, y)}>
-          <div className="preview">
-            <ParcelPreview
-              x={x}
-              y={y}
-              debounce={debounce}
-              size={12}
-              selected={parcel}
-            />
-          </div>
+          {withMap && (
+            <div className="preview">
+              <ParcelPreview
+                x={x}
+                y={y}
+                debounce={debounce}
+                size={12}
+                selected={parcel}
+              />
+            </div>
+          )}
           <Card.Content className="body">
             <Card.Description title={parcelName}>
               <span className="name">{parcelName}</span>

@@ -118,16 +118,17 @@ export function getColorByType(type, x, y) {
 }
 
 export function getAsset(parcelId, parcels, estates) {
-  const parcel = parcels[parcelId]
-  if (!parcel) {
-    return null
+  const selectedParcel = parcels[parcelId]
+  if (!selectedParcel) {
+    return {}
   }
 
-  if (!parcel.in_estate) {
-    return parcel
+  return {
+    asset: !selectedParcel.in_estate
+      ? selectedParcel
+      : getEstateByParcel(selectedParcel, estates),
+    selectedParcel
   }
-
-  return getEstateByParcel(parcel, estates)
 }
 
 export function isOwner(wallet, assetId) {
@@ -196,7 +197,10 @@ export function getCenterCoords(asset) {
   if (isParcel(asset)) {
     return { x: asset.x, y: asset.y }
   }
-
-  const { center } = calculateZoomAndCenter(asset.parcels)
+  const { center } = calculateZoomAndCenter(asset.data.parcels)
   return center
+}
+
+export function isNewAsset(id) {
+  return !id || !id.length
 }
