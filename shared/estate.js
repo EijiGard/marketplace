@@ -35,3 +35,13 @@ export function calculateZoomAndCenter(parcels) {
   const zoom = 1 / (xs.length + ys.length) * 7.5
   return { center, zoom }
 }
+
+export function getInitialEstate(x, y) {
+  return {
+    data: {
+      name: '',
+      description: '',
+      parcels: [{ x, y }]
+    }
+  }
+}
