@@ -59,3 +59,32 @@ export function fetchEstateFailure(id, error) {
     error
   }
 }
+
+export const EDIT_ESTATE_REQUEST = '[Request] Edit Estate'
+export const EDIT_ESTATE_SUCCESS = '[Success] Edit Estate'
+export const EDIT_ESTATE_FAILURE = '[Failure] Edit Estate'
+
+export function editEstateRequest(estate) {
+  return {
+    type: EDIT_ESTATE_REQUEST,
+    estate
+  }
+}
+
+export function editEstateSuccess(txHash, estate) {
+  return {
+    type: EDIT_ESTATE_SUCCESS,
+    ...buildTransactionAction(txHash, {
+      tx_hash: estate.tx_hash,
+      parcels: estate.data.parcels
+    }),
+    estate
+  }
+}
+
+export function editEstateFailure(error) {
+  return {
+    type: EDIT_ESTATE_FAILURE,
+    error
+  }
+}

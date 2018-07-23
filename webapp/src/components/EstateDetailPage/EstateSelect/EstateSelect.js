@@ -75,7 +75,7 @@ export default class EstateSelect extends React.PureComponent {
     }
 
     if (!this.hasNeighbour(x, y)) {
-      return
+      //return
     }
 
     const { parcels, onChange } = this.props
@@ -87,7 +87,7 @@ export default class EstateSelect extends React.PureComponent {
       )
 
       if (!this.areConnected(newParcels) && newParcels.length > 1) {
-        return
+        // return
       }
 
       return onChange(newParcels)
@@ -138,7 +138,7 @@ export default class EstateSelect extends React.PureComponent {
               <Grid.Column width={16}>
                 {allParcels &&
                   parcels.map(({ x, y }) => {
-                    const parcel = allParcels[`${x},${y}`]
+                    const parcel = allParcels[buildCoordinate(x, y)]
                     return parcel ? (
                       <ParcelCard
                         key={parcel.id}

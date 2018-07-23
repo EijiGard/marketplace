@@ -7,23 +7,22 @@ import {
   createEstateFailure,
   FETCH_ESTATE_REQUEST,
   fetchEstateSuccess,
-  fetchEstateFailure
+  fetchEstateFailure,
+  EDIT_ESTATE_REQUEST,
+  editEstateSuccess,
+  editEstateFailure
 } from './actions'
+import { validateCoords } from './utils'
+import { getEstates } from './selectors'
 import { getData as getParcels } from 'modules/parcels/selectors'
 import { locations } from 'locations'
 import { api } from 'lib/api'
 import { buildCoordinate } from 'shared/parcel'
-import { Bounds } from 'shared/map'
 
 export function* estateSaga() {
   yield takeEvery(CREATE_ESTATE_REQUEST, handleCreateEstateRequest)
+  yield takeEvery(EDIT_ESTATE_REQUEST, handleEditEstateRequest)
   yield takeEvery(FETCH_ESTATE_REQUEST, handleEstateRequest)
-}
-
-function validateCoords(x, y) {
-  if (!Bounds.inBounds(x, y)) {
-    throw new Error(`Coords (${x}, ${y}) are outside of the valid bounds`)
-  }
 }
 
 // TODO delete when estate contract returns an address
@@ -38,7 +37,7 @@ function randomString(length) {
 function* handleCreateEstateRequest(action) {
   const { estate } = action
   try {
-    estate.data.parcels.forEach(coords => validateCoords)
+    estate.data.parcels.forEach(({ x, y }) => validateCoords(x, y))
     // call estate contract
     const contractAddress = randomString(42)
     const txHash = randomString(42)
@@ -55,8 +54,38 @@ function* handleCreateEstateRequest(action) {
     )
     yield put(push(locations.activity))
   } catch (error) {
-    console.warn(error)
     yield put(createEstateFailure(estate, error.message))
+  }
+}
+
+function* handleEditEstateRequest(action) {
+  const { estate } = action
+  const newParcels = estate.data.parcels
+  try {
+    newParcels.forEach(({ x, y }) => validateCoords(x, y))
+
+    const pristineEstate = (yield select(getEstates))[estate.id]
+    const pristineParcels = pristineEstate.data.parcels
+
+    const parcelsToAdd = newParcels.filter(
+      newParcel =>
+        !pristineParcels.find(
+          pristineParcel =>
+            pristineParcel.x === newParcel.x && pristineParcel.y === newParcel.y
+        )
+    )
+
+    const parcelsToDelete = pristineParcels.filter(
+      pristineParcel =>
+        !newParcels.find(
+          newParcel =>
+            pristineParcel.x === newParcel.x && pristineParcel.y === newParcel.y
+        )
+    )
+    yield put(editEstateSuccess(parcelsToAdd, parcelsToDelete))
+    // yield put(push(locations.activity))
+  } catch (error) {
+    yield put(editEstateFailure(estate, error.message))
   }
 }
 
@@ -67,7 +96,6 @@ function* handleEstateRequest(action) {
     const estate = estates.find(e => e.id === id)
     yield put(fetchEstateSuccess(id, estate))
   } catch (error) {
-    console.warn(error)
     yield put(fetchEstateFailure(id, error.message))
   }
 }

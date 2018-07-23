@@ -2,7 +2,8 @@ import { withRouter } from 'react-router'
 import { connect } from 'react-redux'
 
 import { getMatchParams } from 'modules/location/selectors'
-import { createEstateRequest } from 'modules/estates/actions'
+import { isNewAsset } from 'shared/asset'
+import { createEstateRequest, editEstateRequest } from 'modules/estates/actions'
 import EstateDetailPage from './EstateDetailPage'
 
 const mapState = (state, ownProps) => {
@@ -14,9 +15,13 @@ const mapState = (state, ownProps) => {
   }
 }
 
-const mapDispatch = dispatch => {
+const mapDispatch = (dispatch, ownProps) => {
+  const { id } = getMatchParams(ownProps)
   return {
-    createEstate: estate => dispatch(createEstateRequest(estate))
+    createEstate: estate =>
+      isNewAsset(id)
+        ? dispatch(createEstateRequest(estate))
+        : dispatch(editEstateRequest(estate))
   }
 }
 

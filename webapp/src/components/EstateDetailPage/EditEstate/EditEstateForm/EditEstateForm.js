@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import { Button, Form, Input } from 'semantic-ui-react'
 import { isValidName, isValidDescription } from 'shared/asset'
+import { buildCoordinate } from 'shared/parcel'
 import { preventDefault } from 'lib/utils'
 import { t } from 'modules/translation/utils'
 import { estateType, coordsType, parcelType } from 'components/types'
@@ -82,7 +83,7 @@ export default class EditEstateForm extends React.PureComponent {
         <br />
         <div>
           {parcels.map(({ x, y }) => {
-            const parcel = allParcels[`${x},${y}`]
+            const parcel = allParcels[buildCoordinate(x, y)]
             return parcel ? (
               <ParcelCard key={parcel.id} parcel={parcel} withMap={false} />
             ) : null
