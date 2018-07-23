@@ -4,12 +4,14 @@ import PropTypes from 'prop-types'
 import EstateSelect from './EstateSelect'
 import EditEstate from './EditEstate'
 import Estate from 'components/Estate'
+import { parcelType } from 'components/types'
 
 export default class EstateDetailPage extends React.PureComponent {
   static propTypes = {
     x: PropTypes.number,
     y: PropTypes.number,
     id: PropTypes.string,
+    allParcels: PropTypes.objectOf(parcelType),
     createEstate: PropTypes.func.isRequired
   }
 
@@ -54,7 +56,6 @@ export default class EstateDetailPage extends React.PureComponent {
   render() {
     const { isSelecting, estate } = this.state
     const { id, x, y } = this.props
-
     return (
       <Estate id={id} x={x} y={y} onEstateFetched={this.updateState}>
         {(asset, isOwner, wallet) => {
@@ -74,6 +75,7 @@ export default class EstateDetailPage extends React.PureComponent {
               ) : (
                 <EditEstate
                   estate={estate}
+                  parcels={estate.data.parcels}
                   onCancel={this.handleSwitch}
                   onChange={this.handleChange}
                   onSubmit={this.handleSubmit}

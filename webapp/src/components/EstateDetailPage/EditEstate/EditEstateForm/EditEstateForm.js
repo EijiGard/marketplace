@@ -5,13 +5,15 @@ import { Button, Form, Input } from 'semantic-ui-react'
 import { isValidName, isValidDescription } from 'shared/asset'
 import { preventDefault } from 'lib/utils'
 import { t } from 'modules/translation/utils'
-import { estateType } from 'components/types'
-
+import { estateType, coordsType, parcelType } from 'components/types'
+import ParcelCard from 'components/ParcelCard'
 import './EditEstateForm.css'
 
 export default class EditEstateForm extends React.PureComponent {
   static propTypes = {
     estate: estateType.isRequired,
+    parcels: PropTypes.arrayOf(coordsType).isRequired,
+    allParcels: PropTypes.objectOf(parcelType),
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired
   }
@@ -54,7 +56,7 @@ export default class EditEstateForm extends React.PureComponent {
   }
 
   render() {
-    const { onCancel, onSubmit, estate } = this.props
+    const { onCancel, onSubmit, estate, allParcels, parcels } = this.props
     const { name, description } = estate.data
 
     return (
@@ -78,6 +80,14 @@ export default class EditEstateForm extends React.PureComponent {
           />
         </Form.Field>
         <br />
+        <div>
+          {parcels.map(({ x, y }) => {
+            const parcel = allParcels[`${x},${y}`]
+            return parcel ? (
+              <ParcelCard key={parcel.id} parcel={parcel} withMap={false} />
+            ) : null
+          })}
+        </div>
         <div>
           <Button type="button" onClick={onCancel}>
             {t('global.cancel')}

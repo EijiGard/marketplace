@@ -6,7 +6,7 @@ import AssetDetailPage from 'components/AssetDetailPage'
 import ParcelCard from 'components/ParcelCard'
 import EstateSelectActions from './EstateSelectActions'
 import { t } from 'modules/translation/utils'
-import { coordsType } from 'components/types'
+import { coordsType, parcelType } from 'components/types'
 import { getCoordsMatcher, isEqualCoords, buildCoordinate } from 'shared/parcel'
 import { isOwner } from 'shared/asset'
 import './EstateSelect.css'
@@ -17,6 +17,7 @@ export default class EstateSelect extends React.PureComponent {
     y: PropTypes.number,
     estate: PropTypes.object,
     parcels: PropTypes.arrayOf(coordsType).isRequired,
+    allParcels: PropTypes.objectOf(parcelType),
     error: PropTypes.string,
     wallet: PropTypes.object.isRequired,
     onCancel: PropTypes.func.isRequired,
@@ -135,16 +136,17 @@ export default class EstateSelect extends React.PureComponent {
                 />
               </Grid.Column>
               <Grid.Column width={16}>
-                {parcels.map(({ x, y }) => {
-                  const parcel = allParcels[`${x},${y}`]
-                  return parcel ? (
-                    <ParcelCard
-                      key={parcel.id}
-                      parcel={parcel}
-                      withMap={false}
-                    />
-                  ) : null
-                })}
+                {allParcels &&
+                  parcels.map(({ x, y }) => {
+                    const parcel = allParcels[`${x},${y}`]
+                    return parcel ? (
+                      <ParcelCard
+                        key={parcel.id}
+                        parcel={parcel}
+                        withMap={false}
+                      />
+                    ) : null
+                  })}
               </Grid.Column>
             </Grid.Row>
           </Grid>

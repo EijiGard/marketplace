@@ -1,22 +1,31 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+
 import { t } from 'modules/translation/utils'
 import EstateModal from './EstateModal'
 import EditEstateForm from './EditEstateForm'
-import { estateType } from 'components/types'
-
+import { estateType, coordsType, parcelType } from 'components/types'
 import './EditEstate.css'
 
 export default class EditEstate extends React.PureComponent {
   static propTypes = {
     estate: estateType.isRequired,
+    parcels: PropTypes.arrayOf(coordsType).isRequired,
+    allParcels: PropTypes.objectOf(parcelType),
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired
   }
 
   render() {
-    const { onSubmit, onChange, onCancel, estate } = this.props
+    const {
+      onSubmit,
+      onChange,
+      onCancel,
+      estate,
+      allParcels,
+      parcels
+    } = this.props
 
     return (
       <div className="EditEstate">
@@ -28,6 +37,8 @@ export default class EditEstate extends React.PureComponent {
         >
           <EditEstateForm
             estate={estate}
+            parcels={parcels}
+            allParcels={allParcels}
             onSubmit={onSubmit}
             onCancel={onCancel}
             onChange={onChange}
