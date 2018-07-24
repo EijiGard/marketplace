@@ -60,20 +60,20 @@ export function fetchEstateFailure(id, error) {
   }
 }
 
-export const EDIT_ESTATE_REQUEST = '[Request] Edit Estate'
-export const EDIT_ESTATE_SUCCESS = '[Success] Edit Estate'
-export const EDIT_ESTATE_FAILURE = '[Failure] Edit Estate'
+export const EDIT_ESTATE_PARCELS_REQUEST = '[Request] Edit Estate Parcels'
+export const EDIT_ESTATE_PARCELS_SUCCESS = '[Success] Edit Estate Parcels'
+export const EDIT_ESTATE_PARCELS_FAILURE = '[Failure] Edit Estate Parcels'
 
-export function editEstateRequest(estate) {
+export function editEstateParcelsRequest(estate) {
   return {
-    type: EDIT_ESTATE_REQUEST,
+    type: EDIT_ESTATE_PARCELS_REQUEST,
     estate
   }
 }
 
-export function editEstateSuccess(txHash, estate) {
+export function editEstateParcelsSuccess(txHash, estate) {
   return {
-    type: EDIT_ESTATE_SUCCESS,
+    type: EDIT_ESTATE_PARCELS_SUCCESS,
     ...buildTransactionAction(txHash, {
       tx_hash: estate.tx_hash,
       parcels: estate.data.parcels
@@ -82,9 +82,38 @@ export function editEstateSuccess(txHash, estate) {
   }
 }
 
-export function editEstateFailure(error) {
+export function editEstateParcelsFailure(error) {
   return {
-    type: EDIT_ESTATE_FAILURE,
+    type: EDIT_ESTATE_PARCELS_FAILURE,
+    error
+  }
+}
+
+export const EDIT_ESTATE_METADATA_REQUEST = '[Request] Edit Estate Metadata'
+export const EDIT_ESTATE_METADATA_SUCCESS = '[Success] Edit Estate Metadata'
+export const EDIT_ESTATE_METADATA_FAILURE = '[Failure] Edit Estate Metadata'
+
+export function editEstateMetadataRequest(estate) {
+  return {
+    type: EDIT_ESTATE_METADATA_REQUEST,
+    estate
+  }
+}
+
+export function editEstateMetadataSuccess(txHash, estate) {
+  return {
+    type: EDIT_ESTATE_METADATA_SUCCESS,
+    ...buildTransactionAction(txHash, {
+      tx_hash: estate.tx_hash,
+      parcels: estate.data.parcels
+    }),
+    estate
+  }
+}
+
+export function editEstateMetadataFailure(error) {
+  return {
+    type: EDIT_ESTATE_METADATA_FAILURE,
     error
   }
 }

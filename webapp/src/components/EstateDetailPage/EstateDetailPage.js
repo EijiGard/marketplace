@@ -9,11 +9,12 @@ export default class EstateDetailPage extends React.PureComponent {
     x: PropTypes.number,
     y: PropTypes.number,
     id: PropTypes.string,
-    createEstate: PropTypes.func.isRequired
+    submitEstate: PropTypes.func.isRequired,
+    editEstateMetadata: PropTypes.func.isRequired
   }
 
   render() {
-    const { id, x, y, createEstate } = this.props
+    const { id, x, y, submitEstate, editEstateMetadata } = this.props
     return (
       <Estate id={id} x={x} y={y}>
         {(estate, isOwner, wallet) => (
@@ -21,7 +22,8 @@ export default class EstateDetailPage extends React.PureComponent {
             estate={estate}
             isOwner={isOwner}
             wallet={wallet}
-            createEstate={createEstate}
+            submitEstate={submitEstate}
+            editEstateMetadata={editEstateMetadata}
           />
         )}
       </Estate>

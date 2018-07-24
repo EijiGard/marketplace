@@ -31,7 +31,7 @@ export async function parcelReducer(event) {
     case BlockchainEvent.EVENTS.parcelTransfer: {
       const { to } = event.args
 
-      log.info(`[${name}] Updating "${parcelId}" owner with "${to}"`)
+      log.info(`[${name}] Transfering "${parcelId}" owner to "${to}"`)
 
       const [last_transferred_at] = await Promise.all([
         new BlockTimestampService().getBlockTime(block_number),

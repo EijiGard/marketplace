@@ -3,7 +3,11 @@ import { connect } from 'react-redux'
 
 import { getMatchParams } from 'modules/location/selectors'
 import { isNewAsset } from 'shared/asset'
-import { createEstateRequest, editEstateRequest } from 'modules/estates/actions'
+import {
+  createEstateRequest,
+  editEstateParcelsRequest,
+  editEstateMetadataRequest
+} from 'modules/estates/actions'
 import EstateDetailPage from './EstateDetailPage'
 
 const mapState = (state, ownProps) => {
@@ -18,10 +22,11 @@ const mapState = (state, ownProps) => {
 const mapDispatch = (dispatch, ownProps) => {
   const { id } = getMatchParams(ownProps)
   return {
-    createEstate: estate =>
+    submitEstate: estate =>
       isNewAsset(id)
         ? dispatch(createEstateRequest(estate))
-        : dispatch(editEstateRequest(estate))
+        : dispatch(editEstateParcelsRequest(estate)),
+    editEstateMetadata: estate => dispatch(editEstateMetadataRequest(estate))
   }
 }
 

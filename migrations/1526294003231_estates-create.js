@@ -20,6 +20,3 @@ exports.up = pgm => {
 exports.down = pgm => {
   pgm.dropTable(tableName)
 }
-
-
-asset_id: { type: 'TEXT', notNull: true },

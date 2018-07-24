@@ -11,7 +11,8 @@ export default class EstateDetail extends React.PureComponent {
     estate: estateType.isRequired,
     wallet: walletType.isRequired,
     isOwner: PropTypes.bool.isRequired,
-    createEstate: PropTypes.func.isRequired
+    submitEstate: PropTypes.func.isRequired,
+    editEstateMetadata: PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -53,7 +54,12 @@ export default class EstateDetail extends React.PureComponent {
   }
 
   handleSubmit = () => {
-    this.props.createEstate(this.state.estate)
+    const { estate, isSelecting } = this.state
+    if (isNewAsset(estate.id) || isSelecting) {
+      this.props.submitEstate(estate)
+    } else {
+      this.props.editEstateMetadata(estate)
+    }
   }
 
   componentDidMount() {}
@@ -70,6 +76,7 @@ export default class EstateDetail extends React.PureComponent {
             parcels={estate.data.parcels}
             onContinue={this.handleSwitch}
             onChange={this.handleChangeParcels}
+            onSubmit={this.handleSubmit}
             wallet={wallet}
           />
         ) : (

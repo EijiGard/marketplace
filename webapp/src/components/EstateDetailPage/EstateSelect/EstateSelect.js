@@ -6,23 +6,26 @@ import AssetDetailPage from 'components/AssetDetailPage'
 import ParcelCard from 'components/ParcelCard'
 import EstateSelectActions from './EstateSelectActions'
 import { t } from 'modules/translation/utils'
-import { coordsType, parcelType } from 'components/types'
+import { coordsType, parcelType, estateType } from 'components/types'
 import { getCoordsMatcher, isEqualCoords, buildCoordinate } from 'shared/parcel'
 import { isOwner } from 'shared/asset'
 import './EstateSelect.css'
+import { getParcelsNotIncluded } from 'shared/utils'
 
 export default class EstateSelect extends React.PureComponent {
   static propTypes = {
     x: PropTypes.number,
     y: PropTypes.number,
-    estate: PropTypes.object,
+    estate: estateType.isRequired,
+    estatePristine: estateType,
     parcels: PropTypes.arrayOf(coordsType).isRequired,
     allParcels: PropTypes.objectOf(parcelType),
     error: PropTypes.string,
     wallet: PropTypes.object.isRequired,
     onCancel: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired
   }
 
   // TODO move all this functions to an estate util file
@@ -96,6 +99,41 @@ export default class EstateSelect extends React.PureComponent {
     onChange([...parcels, { x, y }])
   }
 
+  canContinue = parcels => {
+    if (parcels.length > 1) {
+      return true
+    }
+
+    if (this.props.estatePristine) {
+      return !this.hasParcelsChanged(parcels)
+    }
+
+    return false
+  }
+
+  hasParcelsChanged = parcels => {
+    const { estatePristine } = this.props
+
+    if (!estatePristine) {
+      return false
+    }
+
+    const pristineParcels = estatePristine.data.parcels
+
+    if (pristineParcels.length != parcels.length) {
+      return true
+    }
+
+    if (
+      getParcelsNotIncluded(parcels, pristineParcels).length ||
+      getParcelsNotIncluded(pristineParcels, parcels).length
+    ) {
+      return true
+    }
+
+    return false
+  }
+
   render() {
     const {
       estate,
@@ -104,6 +142,7 @@ export default class EstateSelect extends React.PureComponent {
       error,
       onCancel,
       onContinue,
+      onSubmit,
       parcels,
       wallet,
       allParcels
@@ -111,6 +150,7 @@ export default class EstateSelect extends React.PureComponent {
     if (error) {
       return null
     }
+
     return (
       <div className="EstateSelect">
         <div className="parcel-preview" title={t('parcel_detail.view')}>
@@ -130,9 +170,12 @@ export default class EstateSelect extends React.PureComponent {
               </Grid.Column>
               <Grid.Column className="parcel-actions-container" width={8}>
                 <EstateSelectActions
+                  estate={estate}
+                  onSubmit={onSubmit}
                   onCancel={onCancel}
                   onContinue={onContinue}
-                  disabled={parcels.length <= 1}
+                  canContinue={this.canContinue(parcels)}
+                  canEditMetadata={!this.hasParcelsChanged(parcels)}
                 />
               </Grid.Column>
               <Grid.Column width={16}>

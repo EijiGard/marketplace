@@ -1,6 +1,8 @@
 import { takeEvery, put, select, call } from 'redux-saga/effects'
 import { push } from 'react-router-redux'
 
+import { getParcelsNotIncluded } from 'shared/utils'
+
 import {
   CREATE_ESTATE_REQUEST,
   createEstateSuccess,
@@ -8,9 +10,9 @@ import {
   FETCH_ESTATE_REQUEST,
   fetchEstateSuccess,
   fetchEstateFailure,
-  EDIT_ESTATE_REQUEST,
-  editEstateSuccess,
-  editEstateFailure
+  EDIT_ESTATE_PARCELS_REQUEST,
+  editEstateParcelsSuccess,
+  editEstateParcelsFailure
 } from './actions'
 import { validateCoords } from './utils'
 import { getEstates } from './selectors'
@@ -21,7 +23,7 @@ import { buildCoordinate } from 'shared/parcel'
 
 export function* estateSaga() {
   yield takeEvery(CREATE_ESTATE_REQUEST, handleCreateEstateRequest)
-  yield takeEvery(EDIT_ESTATE_REQUEST, handleEditEstateRequest)
+  yield takeEvery(EDIT_ESTATE_PARCELS_REQUEST, handleEditEstateParcelsRequest)
   yield takeEvery(FETCH_ESTATE_REQUEST, handleEstateRequest)
 }
 
@@ -58,7 +60,7 @@ function* handleCreateEstateRequest(action) {
   }
 }
 
-function* handleEditEstateRequest(action) {
+function* handleEditEstateParcelsRequest(action) {
   const { estate } = action
   const newParcels = estate.data.parcels
   try {
@@ -67,25 +69,14 @@ function* handleEditEstateRequest(action) {
     const pristineEstate = (yield select(getEstates))[estate.id]
     const pristineParcels = pristineEstate.data.parcels
 
-    const parcelsToAdd = newParcels.filter(
-      newParcel =>
-        !pristineParcels.find(
-          pristineParcel =>
-            pristineParcel.x === newParcel.x && pristineParcel.y === newParcel.y
-        )
-    )
+    const parcelsToAdd = getParcelsNotIncluded(newParcels, pristineParcels)
 
-    const parcelsToDelete = pristineParcels.filter(
-      pristineParcel =>
-        !newParcels.find(
-          newParcel =>
-            pristineParcel.x === newParcel.x && pristineParcel.y === newParcel.y
-        )
-    )
-    yield put(editEstateSuccess(parcelsToAdd, parcelsToDelete))
+    const parcelsToDelete = getParcelsNotIncluded(pristineParcels, newParcels)
+
+    yield put(editEstateParcelsSuccess(parcelsToAdd, parcelsToDelete))
     // yield put(push(locations.activity))
   } catch (error) {
-    yield put(editEstateFailure(estate, error.message))
+    yield put(editEstateParcelsFailure(estate, error.message))
   }
 }
 
