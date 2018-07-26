@@ -19,13 +19,14 @@ const INITIAL_STATE = {
 export function estatesReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case FETCH_ESTATE_REQUEST:
-    case CREATE_ESTATE_REQUEST: {
+    case CREATE_ESTATE_REQUEST:
+    case CREATE_ESTATE_SUCCESS: {
       return {
         ...state,
         loading: loadingReducer(state.loading, action)
       }
     }
-    case CREATE_ESTATE_SUCCESS: {
+    case FETCH_ESTATE_SUCCESS: {
       const { estate } = action
       return {
         ...state,
@@ -33,7 +34,7 @@ export function estatesReducer(state = INITIAL_STATE, action) {
         error: null,
         data: {
           ...state.data,
-          [estate.id]: {
+          [estate.asset_id]: {
             ...estate
           }
         }
@@ -47,16 +48,15 @@ export function estatesReducer(state = INITIAL_STATE, action) {
         error: action.error
       }
     }
-    case FETCH_ESTATE_SUCCESS: {
-      return state
-    }
     case FETCH_MAP_SUCCESS: {
       return {
         ...state,
-        data: {
-          ...state.data,
-          ...action.assets.estates
-        }
+        data: action.assets.estates.reduce(
+          (acc, estate) => {
+            return { ...acc, [estate.asset_id]: estate }
+          },
+          { ...state.data }
+        )
       }
     }
     case FETCH_ADDRESS_ESTATES_SUCCESS: {

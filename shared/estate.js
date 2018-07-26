@@ -12,9 +12,10 @@ export function getEstateByParcel(parcel, estates) {
     )
 }
 
-export function areOnSameEstate(parcels) {
-  const { owner } = parcels[0]
-  return parcels.every(parcel => parcel.in_estate && parcel.owner === owner)
+export function areOnSameEstate(parcels, estateId) {
+  return parcels.every(
+    parcel => parcel.estate_id && parcel.estate_id === estateId
+  )
 }
 
 export function toEstateObject(estatesArray) {

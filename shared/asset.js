@@ -1,6 +1,8 @@
 import { isOpen } from './publication'
 import { isParcel } from './parcel'
 import { getEstateByParcel, isEstate, calculateZoomAndCenter } from './estate'
+import { contracts } from 'decentraland-eth'
+const { LANDRegistry } = contracts
 
 export const ROADS_ID = 'f77140f9-c7b4-4787-89c9-9fa0e219b079'
 export const PLAZA_ID = '55327350-d9f0-4cae-b0f3-8745a0431099'
@@ -124,7 +126,7 @@ export function getAsset(parcelId, parcels, estates) {
   }
 
   return {
-    asset: !selectedParcel.in_estate
+    asset: !selectedParcel.estate_id
       ? selectedParcel
       : getEstateByParcel(selectedParcel, estates),
     selectedParcel
@@ -201,6 +203,14 @@ export function getCenterCoords(asset) {
   return center
 }
 
-export function isNewAsset(id) {
-  return !id || !id.length
+export function isNewAsset(asset) {
+  return !asset || !asset.asset_id
+}
+
+export function decodeMetadata(data) {
+  return LANDRegistry.decodeLandData(data)
+}
+
+export function encondeMetadata(data) {
+  return LANDRegistry.encodeLandData(data)
 }

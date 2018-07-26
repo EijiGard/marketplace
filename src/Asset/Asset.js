@@ -26,6 +26,14 @@ export class Asset {
         WHERE id = ANY(${ids})`)
   }
 
+  findByAssetIds(assetIds) {
+    if (assetIds.length === 0) return []
+
+    return db.query(SQL`SELECT *
+        FROM ${raw(this.tableName)}
+        WHERE asset_id = ANY(${assetIds})`)
+  }
+
   async findByOwner(owner) {
     return db.query(SQL`SELECT ${raw(this.tableName)}.*, (
         ${PublicationQueries.findLastAssetPublicationJsonSql(this.tableName)}

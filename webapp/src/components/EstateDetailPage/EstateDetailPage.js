@@ -8,15 +8,15 @@ export default class EstateDetailPage extends React.PureComponent {
   static propTypes = {
     x: PropTypes.number,
     y: PropTypes.number,
-    id: PropTypes.string,
+    assetId: PropTypes.string,
     submitEstate: PropTypes.func.isRequired,
     editEstateMetadata: PropTypes.func.isRequired
   }
 
   render() {
-    const { id, x, y, submitEstate, editEstateMetadata } = this.props
+    const { assetId, x, y, submitEstate, editEstateMetadata } = this.props
     return (
-      <Estate id={id} x={x} y={y}>
+      <Estate assetId={assetId} x={x} y={y}>
         {(estate, isOwner, wallet) => (
           <EstateDetail
             estate={estate}

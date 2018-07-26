@@ -37,10 +37,10 @@ export const FETCH_ESTATE_REQUEST = '[Request] Fetch Estate'
 export const FETCH_ESTATE_SUCCESS = '[Success] Fetch Estate'
 export const FETCH_ESTATE_FAILURE = '[Failure] Fetch Estate'
 
-export function fetchEstateRequest(id) {
+export function fetchEstateRequest(assetId) {
   return {
     type: FETCH_ESTATE_REQUEST,
-    id
+    assetId
   }
 }
 

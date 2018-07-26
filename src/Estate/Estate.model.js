@@ -18,7 +18,11 @@ export class Estate extends Model {
     return new Asset(this).findById(id)
   }
 
-  static async findByIds(ids) {
-    return new Asset(this).findByIds(ids)
+  static findByAssetId(asset_id) {
+    return Estate.find({ asset_id }, { created_at: 'DESC' })
+  }
+
+  static async findByAssetIds(assetIds) {
+    return new Asset(this).findByAssetIds(assetIds)
   }
 }

@@ -1,7 +1,10 @@
-import { Estate, Parcel } from '../src/Estate'
+import { Estate } from '../src/Estate'
+import { Parcel } from '../src/Parcel'
+import { BlockchainEvent } from '../src/BlockchainEvent'
 
 const estateTableName = Estate.tableName
 const parcelTableName = Parcel.tableName
+const blockchainTableName = BlockchainEvent.tableName
 
 exports.up = pgm => {
   pgm.addColumns(estateTableName, {
@@ -9,7 +12,11 @@ exports.up = pgm => {
   })
 
   pgm.addColumns(parcelTableName, {
-    estate_id: { type: 'TEXT', notNull: true }
+    estate_id: { type: 'TEXT' }
+  })
+
+  pgm.addColumns(blockchainTableName, {
+    address: { type: 'TEXT', notNull: true }
   })
 
   pgm.dropColumns(parcelTableName, {
@@ -23,7 +30,11 @@ exports.down = pgm => {
   })
 
   pgm.dropColumns(parcelTableName, {
-    estate_id: { type: 'TEXT', notNull: true }
+    estate_id: { type: 'TEXT' }
+  })
+
+  pgm.dropColumns(blockchainTableName, {
+    address: { type: 'TEXT', notNull: true }
   })
 
   pgm.addColumns(parcelTableName, {

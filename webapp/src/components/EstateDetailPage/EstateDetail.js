@@ -25,8 +25,12 @@ export default class EstateDetail extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { id, estate } = this.props
-    if (!isNewAsset(id) && !prevProps.estate && estate) {
+    const { estateId, estate } = this.props
+    const prevEstate = prevProps.estate
+    if (
+      (estateId && !prevProps.estate && estate) ||
+      (prevEstate && prevEstate.asset_id != estate.asset_id)
+    ) {
       this.setState({ estate })
     }
   }
@@ -55,7 +59,7 @@ export default class EstateDetail extends React.PureComponent {
 
   handleSubmit = () => {
     const { estate, isSelecting } = this.state
-    if (isNewAsset(estate.id) || isSelecting) {
+    if (isNewAsset(estate) || isSelecting) {
       this.props.submitEstate(estate)
     } else {
       this.props.editEstateMetadata(estate)

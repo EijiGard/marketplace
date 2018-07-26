@@ -29,7 +29,7 @@ export default class EstateCard extends React.PureComponent {
 
     return (
       <Card className="EstateCard">
-        <Link to={locations.estateDetail(estate.id)}>
+        <Link to={locations.estateDetail(estate.asset_id)}>
           <div className="preview">
             <ParcelPreview
               x={x}

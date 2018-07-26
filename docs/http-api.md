@@ -355,7 +355,7 @@ Returns a list of parcels, paginated, sorted, and filtered according to the quer
           }
         },
         "last_transferred_at": null,
-        "in_estate": false,
+        "estate_id": null,
         "publication": {
           "tx_hash": "0xdeadbeeffaceb00c",
           "tx_status": "confirmed",

@@ -31,8 +31,8 @@ export const locations = {
   transfer: '/:x/:y/transfer',
   transferLand: (x, y) => `/${x}/${y}/transfer`,
 
-  estate: '/estate/:id/detail',
-  estateDetail: id => `/estate/${id}/detail`,
+  estate: '/estate/:assetId/detail',
+  estateDetail: assetId => `/estate/${assetId}/detail`,
 
   createEstate: '/:x/:y/create-estate',
   createEstateLand: (x, y) => `/${x}/${y}/create-estate`,
@@ -46,7 +46,7 @@ export const locations = {
   assetDetail: function(asset) {
     return isParcel(asset)
       ? this.parcelDetail(asset.x, asset.y)
-      : this.estateDetail(asset.id)
+      : this.estateDetail(asset.asset_id)
   },
 
   settings: '/settings',

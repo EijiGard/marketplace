@@ -35,15 +35,13 @@ export default class EstateSelectActions extends React.PureComponent {
         <Button
           size="tiny"
           disabled={
-            isNewAsset(estate.id)
-              ? !canContinue
-              : !canContinue || canEditMetadata
+            isNewAsset(estate) ? !canContinue : !canContinue || canEditMetadata
           }
-          onClick={isNewAsset(estate.id) ? onContinue : onSubmit}
+          onClick={isNewAsset(estate) ? onContinue : onSubmit}
         >
-          {isNewAsset(estate.id) ? t('global.continue') : t('global.submit')}
+          {isNewAsset(estate) ? t('global.continue') : t('global.submit')}
         </Button>
-        {!isNewAsset(estate.id) && (
+        {!isNewAsset(estate) && (
           <Button size="tiny" disabled={!canEditMetadata} onClick={onContinue}>
             {t('parcel_detail.actions.edit')}
           </Button>

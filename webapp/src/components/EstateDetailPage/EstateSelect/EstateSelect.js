@@ -8,7 +8,7 @@ import EstateSelectActions from './EstateSelectActions'
 import { t } from 'modules/translation/utils'
 import { coordsType, parcelType, estateType } from 'components/types'
 import { getCoordsMatcher, isEqualCoords, buildCoordinate } from 'shared/parcel'
-import { isOwner } from 'shared/asset'
+import { isOwner, isNewAsset } from 'shared/asset'
 import './EstateSelect.css'
 import { getParcelsNotIncluded } from 'shared/utils'
 
@@ -25,7 +25,8 @@ export default class EstateSelect extends React.PureComponent {
     onCancel: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-    onSubmit: PropTypes.func.isRequired
+    onSubmit: PropTypes.func.isRequired,
+    onViewAssetClick: PropTypes.func.isRequired
   }
 
   // TODO move all this functions to an estate util file
@@ -73,7 +74,10 @@ export default class EstateSelect extends React.PureComponent {
   }
 
   handleParcelClick = wallet => (estate, { x, y }) => {
-    if (!isOwner(wallet, buildCoordinate(x, y))) {
+    if (
+      !isOwner(wallet, buildCoordinate(x, y)) &&
+      !isOwner(wallet, estate.asset_id)
+    ) {
       return
     }
 
@@ -83,14 +87,16 @@ export default class EstateSelect extends React.PureComponent {
 
     const { parcels, onChange } = this.props
     const isSelected = parcels.some(getCoordsMatcher({ x, y }))
-
     if (isSelected) {
       const newParcels = parcels.filter(
         coords => !isEqualCoords(coords, { x, y })
       )
 
-      if (!this.areConnected(newParcels) && newParcels.length > 1) {
-        // return
+      if (
+        (!this.areConnected(newParcels) && newParcels.length > 1) ||
+        !newParcels.length
+      ) {
+        return
       }
 
       return onChange(newParcels)
@@ -113,7 +119,6 @@ export default class EstateSelect extends React.PureComponent {
 
   hasParcelsChanged = parcels => {
     const { estatePristine } = this.props
-
     if (!estatePristine) {
       return false
     }
@@ -145,18 +150,24 @@ export default class EstateSelect extends React.PureComponent {
       onSubmit,
       parcels,
       wallet,
-      allParcels
+      allParcels,
+      onViewAssetClick
     } = this.props
     if (error) {
       return null
     }
 
+    const canEdit = isNewAsset(estate) || isOwner(wallet, estate.asset_id)
+
+    console.log(estate)
     return (
       <div className="EstateSelect">
         <div className="parcel-preview" title={t('parcel_detail.view')}>
           <AssetDetailPage
             asset={estate}
-            onAssetClick={this.handleParcelClick(wallet)}
+            onAssetClick={
+              canEdit ? this.handleParcelClick(wallet) : onViewAssetClick
+            }
           />
         </div>
         <Container>
@@ -168,16 +179,18 @@ export default class EstateSelect extends React.PureComponent {
                   {t('estate_select.description', { x, y })}
                 </p>
               </Grid.Column>
-              <Grid.Column className="parcel-actions-container" width={8}>
-                <EstateSelectActions
-                  estate={estate}
-                  onSubmit={onSubmit}
-                  onCancel={onCancel}
-                  onContinue={onContinue}
-                  canContinue={this.canContinue(parcels)}
-                  canEditMetadata={!this.hasParcelsChanged(parcels)}
-                />
-              </Grid.Column>
+              {canEdit && (
+                <Grid.Column className="parcel-actions-container" width={8}>
+                  <EstateSelectActions
+                    estate={estate}
+                    onSubmit={onSubmit}
+                    onCancel={onCancel}
+                    onContinue={onContinue}
+                    canContinue={this.canContinue(parcels)}
+                    canEditMetadata={!this.hasParcelsChanged(parcels)}
+                  />
+                </Grid.Column>
+              )}
               <Grid.Column width={16}>
                 {allParcels &&
                   parcels.map(({ x, y }) => {

@@ -66,7 +66,7 @@ function* handleEditEstateParcelsRequest(action) {
   try {
     newParcels.forEach(({ x, y }) => validateCoords(x, y))
 
-    const pristineEstate = (yield select(getEstates))[estate.id]
+    const pristineEstate = (yield select(getEstates))[estate.asset_id]
     const pristineParcels = pristineEstate.data.parcels
 
     const parcelsToAdd = getParcelsNotIncluded(newParcels, pristineParcels)
@@ -81,12 +81,11 @@ function* handleEditEstateParcelsRequest(action) {
 }
 
 function* handleEstateRequest(action) {
-  const { id } = action
+  const { assetId } = action
   try {
-    const { estates } = yield call(() => api.fetchEstates())
-    const estate = estates.find(e => e.id === id)
-    yield put(fetchEstateSuccess(id, estate))
+    const estate = yield call(() => api.fetchEstate(assetId))
+    yield put(fetchEstateSuccess(assetId, estate))
   } catch (error) {
-    yield put(fetchEstateFailure(id, error.message))
+    yield put(fetchEstateFailure(assetId, error.message))
   }
 }

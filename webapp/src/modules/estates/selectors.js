@@ -33,6 +33,3 @@ export const getEstates = createSelector(
       return acc
     }, {})
 )
-
-export const getEstateByIdFactory = id =>
-  createSelector(getData, estates => estates[id])

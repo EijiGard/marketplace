@@ -48,8 +48,9 @@ export function normalizeParcel(parcel, prevParcel = {}) {
 
 export function connectParcels(parcelArray, parcels) {
   for (const parcel of parcelArray) {
+    // @nacho TODO: revisit this
     const { id, x, y } = parcel
-    if (parcels[id].in_estate || parcels[id].district_id != null) {
+    if (parcels[id].estate_id || parcels[id].district_id != null) {
       const leftId = buildCoordinate(x - 1, y)
       const topId = buildCoordinate(x, y + 1)
       const topLeftId = buildCoordinate(x - 1, y + 1)
@@ -75,9 +76,9 @@ export function areConnected(parcels, parcelId, sideId) {
   if (parcel.district_id && sameDistrict) {
     return true
   }
-
+  //@nacho TODO: Check if owner is EstateRegistry and check by estate_id
   const sameOwner = parcel.owner === sideParcel.owner
-  return parcel.in_estate && parcel.owner && sameOwner
+  return parcel.estate_id && parcel.owner && sameOwner
 }
 
 export function isSameValue(parcelA, parcelB, prop) {

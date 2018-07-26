@@ -9,13 +9,13 @@ import { getError, getData as getEstates } from 'modules/estates/selectors'
 import EstateSelect from './EstateSelect'
 
 const mapState = (state, ownProps) => {
-  const { x, y, id } = getMatchParams(ownProps)
+  const { x, y, assetId } = getMatchParams(ownProps)
   const estates = getEstates(state)
   return {
     x: parseInt(x, 10),
     y: parseInt(y, 10),
     allParcels: getParcels(state),
-    estatePristine: estates[id],
+    estatePristine: estates[assetId],
     error: getError(state)
   }
 }
@@ -24,7 +24,9 @@ const mapDispatch = (dispatch, ownProps) => {
   const { x, y } = getMatchParams(ownProps)
   return {
     onError: error => dispatch(navigateTo(locations.root)),
-    onCancel: () => dispatch(navigateTo(locations.parcelDetail(x, y)))
+    onCancel: () => dispatch(navigateTo(locations.parcelDetail(x, y))),
+    onViewAssetClick: asset =>
+      dispatch(navigateTo(locations.assetDetail(asset)))
   }
 }
 
