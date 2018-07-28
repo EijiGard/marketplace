@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 
 import EstateDetail from './EstateDetail'
 import Estate from 'components/Estate'
+import { isNewAsset } from 'shared/asset'
 
 export default class EstateDetailPage extends React.PureComponent {
   static propTypes = {
@@ -20,6 +21,7 @@ export default class EstateDetailPage extends React.PureComponent {
         {(estate, isOwner, wallet) => (
           <EstateDetail
             estate={estate}
+            isCreation={isNewAsset(estate)}
             isOwner={isOwner}
             wallet={wallet}
             submitEstate={submitEstate}

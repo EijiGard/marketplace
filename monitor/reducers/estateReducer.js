@@ -13,85 +13,70 @@ export async function estateReducer(event) {
   const parcelId = await getParcelIdFromEvent(event)
 
   switch (normalizedName) {
-    //case BlockchainEvent.EVENTS.estateUpdate: {
-    //  try {
-    //    const { data } = event.args
-    //    const attributes = {
-    //      data: contracts.LANDRegistry.decodeLandData(data)
-    //    }
-    //    const attrsStr = JSON.stringify(attributes)
-    //
-    //    log.info(`[${name}] Updating "${parcelId}" with ${attrsStr}`)
-    //    await Parcel.update(attributes, { id: parcelId })
-    //  } catch (error) {
-    //    log.info(`[${name}] Skipping badly formed data for "${parcelId}"`)
-    //  }
-    //  break
-    //}
     case BlockchainEvent.EVENTS.estateCreate: {
-      const { to, estateId, metadata } = event.args
-      const asset_id = estateId.toNumber()
+      const { owner, estateId, metadata } = event.args
 
-      const exists = await Estate.count({ asset_id })
+      const exists = await Estate.count({ asset_id: estateId })
       if (exists) {
-        log.info(`[${name}] Estate ${asset_id} already exists`)
+        log.info(`[${name}] Estate ${estateId} already exists`)
         return
       }
 
       const data = decodeMetadata(metadata)
 
-      log.info(`[${name}] Creating Estate "${asset_id}" with owner "${to}"`)
+      log.info(`[${name}] Creating Estate "${estateId}" with owner "${owner}"`)
 
       const last_transferred_at = await new BlockTimestampService().getBlockTime(
         block_number
       )
       await Estate.insert({
-        owner: to.toLowerCase(),
+        owner: owner.toLowerCase(),
         data: { name: data.name, description: data.description },
-        asset_id,
+        asset_id: estateId,
         last_transferred_at
       })
       break
     }
     case BlockchainEvent.EVENTS.addLand: {
-      const { estateId } = event.args
-      const estate = (await Estate.findById({
-        asset_id: estateId.toNumber()
-      }))[0]
-
-      log.info(
-        `[${name}] Update Estate "${estateId.toNumber()}" add land owner (${x},${y})`
-      )
-      const [x, y] = Parcel.splitId(parcelId)
-      await Estate.update({
-        data: { ...estate.data, parcels: [...estate.data.parcels, { x, y }] }
-      })
+      if (parcelId) {
+        const { estateId } = event.args
+        const estate = (await Estate.findByAssetId({
+          asset_id: estateId
+        }))[0]
+        const [x, y] = Parcel.splitId(parcelId)
+        log.info(
+          `[${name}] Update Estate "${estateId}" add land owner (${x},${y})`
+        )
+        await Estate.update({
+          data: { ...estate.data, parcels: [...estate.data.parcels, { x, y }] }
+        })
+      }
       break
     }
     case BlockchainEvent.EVENTS.removeLand: {
-      const { estateId } = event.args
-      const estate = (await Estate.findById({
-        asset_id: estateId.toNumber()
-      }))[0]
+      if (parcelId) {
+        const { estateId } = event.args
+        const estate = (await Estate.findByAssetId({
+          asset_id: estateId
+        }))[0]
 
-      log.info(
-        `[${name}] Update Estate "${estateId.toNumber()}" add land owner (${x},${y})`
-      )
-      const [x, y] = Parcel.splitId(parcelId)
-      await Estate.update({
-        data: {
-          ...estate.data,
-          parcels: estate.data.parcels.filter(p => (p.x === x) & (p.y === y))
-        }
-      })
+        log.info(
+          `[${name}] Update Estate "${estateId}" add land owner (${x},${y})`
+        )
+        const [x, y] = Parcel.splitId(parcelId)
+        await Estate.update({
+          data: {
+            ...estate.data,
+            parcels: estate.data.parcels.filter(p => (p.x === x) & (p.y === y))
+          }
+        })
+      }
       break
     }
     case BlockchainEvent.EVENTS.estateTransfer: {
       const { to, estateId } = event.args
 
-      log.info(
-        `[${name}] Transfering "${estateId.toNumber()}" owner to "${to}"`
-      )
+      log.info(`[${name}] Transfering "${estateId}" owner to "${to}"`)
 
       const last_transferred_at = await new BlockTimestampService().getBlockTime(
         block_number
@@ -99,7 +84,7 @@ export async function estateReducer(event) {
 
       await Estate.update(
         { owner: to.toLowerCase(), last_transferred_at },
-        { asset_id: estateId.toNumber() }
+        { asset_id: estateId }
       )
       break
     }

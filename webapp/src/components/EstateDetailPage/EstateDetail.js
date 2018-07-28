@@ -12,7 +12,8 @@ export default class EstateDetail extends React.PureComponent {
     wallet: walletType.isRequired,
     isOwner: PropTypes.bool.isRequired,
     submitEstate: PropTypes.func.isRequired,
-    editEstateMetadata: PropTypes.func.isRequired
+    editEstateMetadata: PropTypes.func.isRequired,
+    isCreation: PropTypes.bool.isRequired
   }
 
   constructor(props) {
@@ -25,10 +26,10 @@ export default class EstateDetail extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
-    const { estateId, estate } = this.props
+    const { estate, isCreation } = this.props
     const prevEstate = prevProps.estate
     if (
-      (estateId && !prevProps.estate && estate) ||
+      (!isCreation && !prevProps.estate && estate) ||
       (prevEstate && prevEstate.asset_id != estate.asset_id)
     ) {
       this.setState({ estate })
@@ -70,7 +71,7 @@ export default class EstateDetail extends React.PureComponent {
 
   render() {
     const { isSelecting, estate } = this.state
-    const { wallet } = this.props
+    const { wallet, isCreation } = this.props
 
     return (
       <React.Fragment>
@@ -82,6 +83,7 @@ export default class EstateDetail extends React.PureComponent {
             onChange={this.handleChangeParcels}
             onSubmit={this.handleSubmit}
             wallet={wallet}
+            isCreation={isCreation}
           />
         ) : (
           <EditEstate

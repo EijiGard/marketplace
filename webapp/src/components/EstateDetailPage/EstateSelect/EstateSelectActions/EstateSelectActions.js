@@ -3,13 +3,11 @@ import PropTypes from 'prop-types'
 import { Button } from 'semantic-ui-react'
 
 import { t } from 'modules/translation/utils'
-import { isNewAsset } from 'shared/asset'
-import { estateType } from 'components/types'
 import './EstateSelectActions.css'
 
 export default class EstateSelectActions extends React.PureComponent {
   static propTypes = {
-    estate: estateType.isRequired,
+    isCreation: PropTypes.bool.isRequired,
     onSubmit: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     onContinue: PropTypes.func.isRequired,
@@ -24,7 +22,7 @@ export default class EstateSelectActions extends React.PureComponent {
       onContinue,
       canContinue,
       canEditMetadata,
-      estate
+      isCreation
     } = this.props
 
     return (
@@ -34,14 +32,12 @@ export default class EstateSelectActions extends React.PureComponent {
         </Button>
         <Button
           size="tiny"
-          disabled={
-            isNewAsset(estate) ? !canContinue : !canContinue || canEditMetadata
-          }
-          onClick={isNewAsset(estate) ? onContinue : onSubmit}
+          disabled={isCreation ? !canContinue : !canContinue || canEditMetadata}
+          onClick={isCreation ? onContinue : onSubmit}
         >
-          {isNewAsset(estate) ? t('global.continue') : t('global.submit')}
+          {isCreation ? t('global.continue') : t('global.submit')}
         </Button>
-        {!isNewAsset(estate) && (
+        {!isCreation && (
           <Button size="tiny" disabled={!canEditMetadata} onClick={onContinue}>
             {t('parcel_detail.actions.edit')}
           </Button>

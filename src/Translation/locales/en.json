@@ -63,6 +63,7 @@
   },
   "estate_select": {
     "description": "Select adjacent parcels beginning from {x},{y}",
+    "detail": "Estate detail",
     "selection": "Select the parcels for your new Estate"
   },
   "footer": {

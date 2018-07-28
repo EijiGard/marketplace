@@ -22,7 +22,7 @@ const mapState = (state, { assetId, x, y }) => {
 }
 
 const mapDispatch = (dispatch, { assetId }) => ({
-  onLoaded: () => dispatch(fetchEstateRequest(assetId)),
+  onLoaded: () => assetId && dispatch(fetchEstateRequest(assetId)),
   onAccessDenied: () => dispatch(push(locations.estateDetail(assetId)))
 })
 

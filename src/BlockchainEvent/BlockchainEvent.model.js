@@ -1,5 +1,8 @@
 import { env, Model } from 'decentraland-commons'
 import { SQL } from '../database'
+import { loadEnv } from '../../scripts/utils'
+
+loadEnv()
 
 export class BlockchainEvent extends Model {
   static tableName = 'blockchain_events'
@@ -18,7 +21,7 @@ export class BlockchainEvent extends Model {
   static mortgageHelperAddress = env.get('MORTGAGE_HELPER_CONTRACT_ADDRESS')
   static rcnEngineAddress = env.get('RCN_ENGINE_CONTRACT_ADDRESS')
   static mortgageManagerAddress = env.get('MORTGAGE_MANAGER_CONTRACT_ADDRESS')
-  static estateRegistryAddress = env.get('MORTGAGE_MANAGER_CONTRACT_ADDRESS')
+  static estateRegistryAddress = env.get('ESTATE_REGISTRY_CONTRACT_ADDRESS')
 
   static EVENTS = {
     publicationCreated: BlockchainEvent.getNormalizedEventName(
@@ -40,6 +43,10 @@ export class BlockchainEvent extends Model {
     parcelUpdate: BlockchainEvent.getNormalizedEventName(
       BlockchainEvent.landRegistryAddress,
       'Update'
+    ),
+    parcelSetEstateRegistry: BlockchainEvent.getNormalizedEventName(
+      BlockchainEvent.landRegistryAddress,
+      'EstateRegistrySet'
     ),
     estateTransfer: BlockchainEvent.getNormalizedEventName(
       BlockchainEvent.estateRegistryAddress,

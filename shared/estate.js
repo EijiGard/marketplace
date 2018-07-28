@@ -1,3 +1,5 @@
+import { getCoordsMatcher } from './parcel'
+
 export function isEstate(asset) {
   return !!asset.parcels
 }
@@ -45,4 +47,45 @@ export function getInitialEstate(x, y) {
       parcels: [{ x, y }]
     }
   }
+}
+
+export function areConnected(
+  parcels,
+  remaining = [...parcels],
+  alreadyTraveled = []
+) {
+  if (alreadyTraveled.length === parcels.length) {
+    return true
+  }
+
+  if (remaining.length === 0) {
+    return false
+  }
+
+  let actual = remaining.pop()
+
+  const neighbours = getNeighbours(actual.x, actual.y, parcels).filter(
+    coords => {
+      return (
+        parcels.some(getCoordsMatcher(coords)) &&
+        !alreadyTraveled.some(getCoordsMatcher(coords))
+      )
+    }
+  )
+
+  return areConnected(parcels, remaining, [...alreadyTraveled, ...neighbours])
+}
+
+export function isNeighbour(x, y) {
+  return coords =>
+    (coords.x === x && (coords.y + 1 === y || coords.y - 1 === y)) ||
+    (coords.y === y && (coords.x + 1 === x || coords.x - 1 === x))
+}
+
+export function hasNeighbour(x, y, parcels) {
+  return parcels.some(isNeighbour(x, y))
+}
+
+export function getNeighbours(x, y, parcels) {
+  return parcels.filter(isNeighbour(x, y))
 }

@@ -27,3 +27,14 @@
 .EstateSelect .EstateActions {
   text-align: right;
 }
+
+.EstateSelect .estate-selection .selected-parcels.column {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.selected-parcels .ParcelCard {
+  margin-top: 10px;
+  margin-bottom: 0;
+  margin-right: 25px;
+}

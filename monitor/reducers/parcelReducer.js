@@ -9,10 +9,13 @@ import { getParcelIdFromEvent } from './utils'
 const log = new Log('parcelReducer')
 
 export async function parcelReducer(event) {
-  const { block_number, name } = event
+  const { block_number, name, normalizedName } = event
   const parcelId = await getParcelIdFromEvent(event)
 
-  switch (name) {
+  switch (normalizedName) {
+    case BlockchainEvent.EVENTS.parcelSetEstateRegistry: {
+      break
+    }
     case BlockchainEvent.EVENTS.parcelUpdate: {
       try {
         const { data } = event.args
